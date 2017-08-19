@@ -1,143 +1,127 @@
-# Arduino core for ESP32 WiFi chip
+Arduino core for ESP8266 WiFi chip
+===========================================
 
-[![Build Status](https://travis-ci.org/espressif/arduino-esp32.svg?branch=master)](https://travis-ci.org/espressif/arduino-esp32)
+This project brings support for ESP8266 chip to the Arduino environment. It lets you write sketches using familiar Arduino functions and libraries, and run them directly on ESP8266, no external microcontroller required.
 
-## Need help or have a question? Join the chat at [![https://gitter.im/espressif/arduino-esp32](https://badges.gitter.im/espressif/arduino-esp32.svg)](https://gitter.im/espressif/arduino-esp32?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+ESP8266 Arduino core comes with libraries to communicate over WiFi using TCP and UDP, set up HTTP, mDNS, SSDP, and DNS servers, do OTA updates, use a file system in flash memory, work with SD cards, servos, SPI and I2C peripherals.
 
-- [Development Status](#development-status)
-- [Installation Instructions](#installation-instructions):
-  + [Using Arduino IDE](#using-through-arduino-ide)
-    + [Windows](https://github.com/espressif/arduino-esp32/blob/master/doc/windows.md)
-    + [Mac OS](#instructions-for-mac)
-    + [Debian/Ubuntu](#instructions-for-debianubuntu-linux)
-    + [Decoding Exceptions](#decoding-exceptions)
-  + [Using PlatformIO](#using-platformio)
-  + [Using as ESP-IDF component](#using-as-esp-idf-component)
-- [ESP32Dev Board PINMAP](#esp32dev-board-pinmap)
+# Contents
+- Installing options:
+  - [Using Boards Manager](#installing-with-boards-manager)
+  - [Using git version](#using-git-version)
+  - [Using PlatformIO](#using-platformio)
+  - [Building with make](#building-with-make)
+- [Documentation](#documentation)
+- [Issues and support](#issues-and-support)
+- [Contributing](#contributing)  
+- [License and credits](#license-and-credits)   
 
-## Development Status
-Most of the framework is implemented. Most noticable is the missing analogWrite. While analogWrite is on it's way, there are a few other options that you can use:
-- 16 channels [LEDC](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.h) which is PWM
-- 8 channels [SigmaDelta](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-sigmadelta.h) which uses SigmaDelta modulation
-- 2 channels [DAC](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-dac.h) which gives real analog output
+### Installing with Boards Manager ###
 
-## Installation Instructions
+Starting with 1.6.4, Arduino allows installation of third-party platform packages using Boards Manager. We have packages available for Windows, Mac OS, and Linux (32 and 64 bit).
 
-### Using through Arduino IDE
+- Install Arduino 1.6.8 from the [Arduino website](http://www.arduino.cc/en/main/software).
+- Start Arduino and open Preferences window.
+- Enter ```http://arduino.esp8266.com/stable/package_esp8266com_index.json``` into *Additional Board Manager URLs* field. You can add multiple URLs, separating them with commas.
+- Open Boards Manager from Tools > Board menu and install *esp8266* platform (and don't forget to select your ESP8266 board from Tools > Board menu after installation).
 
-###[Instructions for Windows](doc/windows.md)
+The best place to ask questions related to this core is ESP8266 community forum: http://www.esp8266.com/arduino.
+If you find this forum or the ESP8266 Boards Manager package useful, please consider supporting it with a donation. <br />
+[![Donate](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/webscr?cmd=_s-xclick&hosted_button_id=4M56YCWV6PX66)
 
-#### Instructions for Mac
-- Install latest Arduino IDE from [arduino.cc](https://www.arduino.cc/en/Main/Software)
-- Open Terminal and execute the following command (copy->paste and hit enter):
+#### Available versions
 
-  ```bash
-  mkdir -p ~/Documents/Arduino/hardware/espressif && \
-  cd ~/Documents/Arduino/hardware/espressif && \
-  git clone https://github.com/espressif/arduino-esp32.git esp32 && \
-  cd esp32/tools/ && \
-  python get.py
-  ```
-- Restart Arduino IDE
+##### Stable version ![](http://arduino.esp8266.com/stable/badge.svg)
+Boards manager link: `http://arduino.esp8266.com/stable/package_esp8266com_index.json`
 
-#### Instructions for Debian/Ubuntu Linux
-- Install latest Arduino IDE from [arduino.cc](https://www.arduino.cc/en/Main/Software)
-- Open Terminal and execute the following command (copy->paste and hit enter):
+Documentation: [http://esp8266.github.io/Arduino/versions/2.3.0/](http://esp8266.github.io/Arduino/versions/2.3.0/)
 
-  ```bash
-  sudo usermod -a -G dialout $USER && \
-  sudo apt-get install git && \
-  mkdir -p ~/Arduino/hardware/espressif && \
-  cd ~/Arduino/hardware/espressif && \
-  git clone https://github.com/espressif/arduino-esp32.git esp32 && \
-  cd esp32/tools/ && \
-  python get.py
-  ```
-- Restart Arduino IDE
+##### Staging version ![](http://arduino.esp8266.com/staging/badge.svg)
+Boards manager link: `http://arduino.esp8266.com/staging/package_esp8266com_index.json`
 
-#### Decoding exceptions
+Documentation: [http://esp8266.github.io/Arduino/versions/2.3.0-rc2/](http://esp8266.github.io/Arduino/versions/2.3.0-rc2/)
 
-You can use [EspExceptionDecoder](https://github.com/me-no-dev/EspExceptionDecoder) to get meaningful call trace.
+### Using git version
+[![Linux build status](https://travis-ci.org/esp8266/Arduino.svg)](https://travis-ci.org/esp8266/Arduino) [![codecov.io](https://codecov.io/github/esp8266/Arduino/coverage.svg?branch=master)](https://codecov.io/github/esp8266/Arduino?branch=master)
+
+- Install Arduino 1.6.8
+- Go to Arduino directory
+- Clone this repository into hardware/esp8266com/esp8266 directory (or clone it elsewhere and create a symlink)
+```bash
+cd hardware
+mkdir esp8266com
+cd esp8266com
+git clone https://github.com/esp8266/Arduino.git esp8266
+```
+- Download binary tools (you need Python 2.7)
+```bash
+cd esp8266/tools
+python get.py
+```
+- Restart Arduino
 
 ### Using PlatformIO
 
 [PlatformIO](http://platformio.org) is an open source ecosystem for IoT
 development with cross platform build system, library manager and full support
-for Espressif ESP32 development. It works on the popular host OS: Mac OS X, Windows,
+for Espressif (ESP8266) development. It works on the popular host OS: Mac OS X, Windows,
 Linux 32/64, Linux ARM (like Raspberry Pi, BeagleBone, CubieBoard).
 
-- [What is PlatformIO?](http://docs.platformio.org/page/what-is-platformio.html)
+- [What is PlatformIO?](http://docs.platformio.org/en/stable/what-is-platformio.html)
 - [PlatformIO IDE](http://platformio.org/platformio-ide)
-- Quick Start with [PlatformIO IDE](http://docs.platformio.org/page/ide/atom.html#quick-start) or [PlatformIO Core](http://docs.platformio.org/page/core.html)
-- [Integration with Cloud and Standalone IDEs](http://docs.platformio.org/page/ide.html) -
-  Cloud9, Codeanywehre, Eclipse Che (Codenvy), Atom, CLion, Eclipse, Emacs, NetBeans, Qt Creator, Sublime Text, VIM and Visual Studio
-- [Project Examples](https://github.com/platformio/platform-espressif32/tree/develop/examples)
-- [Using "Stage" (Git) version of Arduino Core](http://docs.platformio.org/page/platforms/espressif32.html#using-arduino-framework-with-staging-version)
+- Quick Start with [PlatformIO IDE](http://docs.platformio.org/en/stable/ide/atom.html#quick-start) or [PlatformIO CLI](http://docs.platformio.org/en/stable/quickstart.html)
+- [Advanced using](http://docs.platformio.org/en/stable/platforms/espressif.html) -
+  custom settings, uploading to SPIFFS, Over-the-Air (OTA) or using stage version
+- [Integration with other IDE](http://docs.platformio.org/en/stable/ide.html) -
+  Atom, CLion, Eclipse, Emacs, NetBeans, Qt Creator, Sublime Text, VIM and Visual Studio
+- [Project Examples](http://docs.platformio.org/en/stable/platforms/espressif.html#examples)
 
 ### Building with make
 
-[makeEspArduino](https://github.com/plerup/makeEspArduino) is a generic makefile for any ESP8266/ESP32 Arduino project.
+[makeEspArduino](https://github.com/plerup/makeEspArduino) is a generic makefile for any ESP8266 Arduino project.
 Using make instead of the Arduino IDE makes it easier to do automated and production builds.
 
-### Using as ESP-IDF component
-- Download and install [esp-idf](https://github.com/espressif/esp-idf)
-- Create blank idf project (from one of the examples)
-- in the project folder, create a folder called components and clone this repository inside
+### Documentation
 
-    ```bash
-    mkdir -p components && \
-    cd components && \
-    git clone https://github.com/espressif/arduino-esp32.git arduino && \
-    cd .. && \
-    make menuconfig
-  ```
-- ```make menuconfig``` has some Arduino options
-    - "Autostart Arduino setup and loop on boot"
-        - If you enable this options, your main.cpp should be formated like any other sketch
+Documentation for latest development version:
 
-          ```arduino
-          //file: main.cpp
-          #include "Arduino.h"
+- [Reference](doc/reference.md)
+- [Libraries](doc/libraries.md)
+- [File system](doc/filesystem.md)
+- [OTA update](doc/ota_updates/readme.md)
+- [Supported boards](doc/boards.md)
+- [FAQ / Trubleshooting](doc/faq/readme.md)
+- [Change log](doc/changes.md)
 
-          void setup(){
-            Serial.begin(115200);
-          }
+### Issues and support ###
 
-          void loop(){
-            Serial.println("loop");
-            delay(1000);
-          }
-          ```
+If you encounter an issue, you are welcome to submit it here on Github: https://github.com/esp8266/Arduino/issues.
+Please provide as much context as possible: version which you are using (you can check it in Boards Manager), your sketch code, serial output, board model, IDE settings (board selection, flash size, etc).
 
-        - Else you need to implement ```app_main()``` and call ```initArduino();``` in it.
+If you can not find the answers above, you can also try [ESP8266 Community Forum](http://www.esp8266.com/arduino)
 
-          Keep in mind that setup() and loop() will not be called in this case.
-          If you plan to base your code on examples provided in [esp-idf](https://github.com/espressif/esp-idf/tree/master/examples), please make sure move the app_main() function in main.cpp from the files in the example.
+### Contributing
 
-          ```arduino
-          //file: main.cpp
-          #include "Arduino.h"
+For minor fixes of code and documentation, go ahead and submit a pull request.
 
-          extern "C" void app_main()
-          {
-              initArduino();
-              pinMode(4, OUTPUT);
-              digitalWrite(4, HIGH);
-              //do your own thing
-          }
-          ```
-    - "Disable mutex locks for HAL"
-        - If enabled, there will be no protection on the drivers from concurently accessing them from another thread/interrupt/core
-    - "Autoconnect WiFi on boot"
-        - If enabled, WiFi will start with the last known configuration
-        - Else it will wait for WiFi.begin
-- ```make flash monitor``` will build, upload and open serial monitor to your board
+Check out the list of issues which are easy to fix — [easy issues for 2.2.0](https://github.com/esp8266/Arduino/issues?q=is%3Aopen+is%3Aissue+milestone%3A2.2.0+label%3A%22level%3A+easy%22). Working on them is a great way to move the project forward.
 
-## ESP32Dev Board PINMAP
+Larger changes (rewriting parts of existing code from scratch, adding new functions to the core, adding new libraries) should generally be discussed [in the chat](https://gitter.im/esp8266/Arduino) first.
 
-![Pin Functions](doc/esp32_pinmap.png)
+Feature branches with lots of small commits (especially titled "oops", "fix typo", "forgot to add file", etc.) should be squashed before opening a pull request. At the same time, please refrain from putting multiple unrelated changes into a single pull request.
 
-## Hint
+### License and credits ###
 
-Sometimes to program ESP32 via serial you must keep GPIO0 LOW during the programming process
+Arduino IDE is developed and maintained by the Arduino team. The IDE is licensed under GPL.
 
+ESP8266 core includes an xtensa gcc toolchain, which is also under GPL.
+
+Esptool written by Christian Klippel is licensed under GPLv2, currently maintained by Ivan Grokhotkov: https://github.com/igrr/esptool-ck.
+
+Espressif SDK included in this build is under Espressif MIT License.
+
+ESP8266 core files are licensed under LGPL.
+
+[SPI Flash File System (SPIFFS)](https://github.com/pellepl/spiffs) written by Peter Andersson is used in this project. It is distributed under MIT license.
+
+[umm_malloc](https://github.com/rhempel/umm_malloc) memory management library written by Ralph Hempel is used in this project. It is distributed under MIT license.
